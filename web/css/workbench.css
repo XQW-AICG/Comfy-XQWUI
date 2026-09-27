@@ -1,0 +1,184 @@
+/* workbench.css —— 分镜工作台：段标签页 / 段编辑面板 / 参考素材区 /
+   底部悬浮时间轴（Apple 风格精修，自旧系统 timeline.css + media.css 合并移植） */
+
+/* ========== 段落横向标签页 ========== */
+.tabs{display:flex;gap:7px;overflow-x:auto;padding:2px 0 10px;
+  border-bottom:1px solid var(--line);margin-bottom:12px;scrollbar-width:thin}
+.tabs .tab{display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:10px;
+  background:rgba(255,255,255,.045);border:1px solid var(--line);color:var(--dim);
+  font-size:12px;font-weight:520;cursor:pointer;white-space:nowrap;
+  transition:border-color .14s,background .14s,color .14s}
+.tabs .tab:hover{border-color:rgba(255,255,255,.2);color:var(--txt)}
+.tabs .tab.on{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:620;
+  box-shadow:0 1px 4px rgba(10,132,255,.4)}
+.tabs .tab .dot{width:6px;height:6px;border-radius:50%;background:var(--warn);flex:0 0 6px}
+.tabs .tab .dot.ok{background:var(--ok)}
+.tabs .tab.on .dot{box-shadow:0 0 0 2px rgba(255,255,255,.25)}
+.tabs .tab .fr{font-size:10px;opacity:.75;font-variant-numeric:tabular-nums}
+
+/* ========== 段落内容区（编辑面板） ========== */
+.segpane .segvideo{margin-top:12px}
+.segpane video{width:100%;max-height:320px;background:#000;border-radius:12px;
+  box-shadow:var(--shadow-1)}
+.segpane .vbar{display:flex;align-items:center;gap:8px;margin-top:9px;flex-wrap:wrap}
+.segpane .vpath{font-size:11px;color:var(--dim);word-break:break-all}
+.segpane .secline{display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  margin-bottom:9px}
+.segpane .secline .frlbl{font-size:11px;color:var(--dim)}
+.segpane .secline input{width:112px;padding:4px 8px;text-align:center;
+  font-variant-numeric:tabular-nums}
+.segpane .secline .seclen{color:var(--acc-h);font-size:11px;
+  font-variant-numeric:tabular-nums}
+.segpane .secline .seclen input.secs{width:52px;padding:4px 6px;
+  border-color:rgba(10,132,255,.5);color:var(--acc-h)}
+/* 分镜提示词编辑框：加高加大，长提示词有充裕输入空间 */
+.segpane textarea{min-height:240px;font-size:13px;line-height:1.75;padding:11px 13px}
+#gprompt{min-height:112px;font-size:13px;line-height:1.7;padding:10px 12px}
+.segpane .prbar{display:flex;align-items:center;gap:9px;margin-top:6px;
+  flex-wrap:wrap}
+
+/* ========== 提示词引用插入条（全局提示词区共用） ========== */
+#vWork>*>label .mini{vertical-align:1px}
+
+/* ========== 已选参考内容展示区 ========== */
+.refzone{margin-top:11px;border:1px solid var(--line);border-radius:12px;
+  background:rgba(255,255,255,.03);padding:10px 12px}
+.refzone .rzhd{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.refzone .rzhd b{font-size:12px;font-weight:620;display:flex;align-items:center;gap:6px}
+.refzone .rzhd b .ic{color:var(--acc-h)}
+/* 类型标签页：参考图片 / 参考视频 / 参考音频 */
+.rztabs{display:flex;gap:4px;margin-left:6px}
+.rztab{padding:3px 12px;font-size:11.5px;border-radius:8px;border:1px solid var(--line);
+  background:transparent;color:var(--dim);cursor:pointer;font-weight:520;
+  transition:color .13s,background .13s,border-color .13s}
+.rztab:hover{color:var(--txt);background:var(--panel2)}
+.rztab.on{background:var(--acc-d);border-color:rgba(10,132,255,.45);
+  color:var(--acc-h);font-weight:620}
+/* 顶部实时计数（图片 3/9 · 视频 0/9 · 音频 0/9），当前标签页高亮 */
+.rzcnts{display:flex;gap:5px;margin-left:auto}
+.rzcnt{font-size:11px;color:var(--dim);padding:3px 9px;border-radius:8px;
+  border:1px solid var(--line);background:rgba(0,0,0,.14);
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.rzcnt.on{color:var(--acc-h);border-color:rgba(10,132,255,.4);background:var(--acc-d2)}
+.refzone .rzbody{margin-top:9px;display:flex;flex-direction:column;gap:9px}
+.refgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px 14px}
+.refgrp .gt{font-size:11px;color:var(--dim);margin-bottom:6px;display:flex;
+  align-items:center;gap:6px;font-weight:550}
+.refgrp .gt .ic{width:13px;height:13px;color:var(--dim)}
+.refgrp .gt .gtnote{font-weight:450;opacity:.85}
+.refgrp .gt .gtcnt{margin-left:auto;font-weight:520;
+  font-variant-numeric:tabular-nums;color:var(--txt);opacity:.75}
+.refgrp .gt .inh,.refzone .inh{color:var(--warn);font-weight:500}
+.refzone .inh{font-size:11px;line-height:1.6}
+.refzone .inh.warn{color:var(--err)}
+.refitems{display:flex;flex-wrap:wrap;gap:8px}
+.refitem{position:relative;width:78px;border:1px solid var(--line2);border-radius:9px;
+  background:var(--panel2);overflow:hidden;transition:border-color .13s,transform .13s}
+.refitem:hover{border-color:rgba(255,255,255,.24);transform:translateY(-1px)}
+.refitem .thumb{width:100%;height:56px;object-fit:cover;display:block;background:#08090c}
+.refitem .rm{position:absolute;top:3px;right:3px;z-index:2;width:18px;height:18px;
+  border-radius:50%;border:none;background:rgba(10,11,14,.82);
+  color:var(--err);font-size:12px;line-height:1;display:flex;align-items:center;
+  justify-content:center;cursor:pointer;padding:0;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.refitem .rm:hover{background:var(--err);color:#fff}
+.refitem.file{width:auto;max-width:270px;display:flex;align-items:center;gap:7px;
+  padding:6px 26px 6px 9px;height:auto}
+.refitem.file .thumb{width:38px;height:38px;flex:0 0 38px;border-radius:6px;object-fit:cover}
+.refitem.file .ic{color:var(--dim);width:15px;height:15px}
+.refitem.file .nm{font-size:11px;color:var(--txt);overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;max-width:200px}
+.refempty{font-size:11.5px;color:var(--dim);padding:5px 0;line-height:1.7}
+.refadd{padding:4px 11px;font-size:11.5px;border-style:dashed}
+
+/* ========== 素材选择弹窗 ========== */
+.mpgrid{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:12px;
+  padding:9px;background:rgba(0,0,0,.16);margin-top:9px}
+.mpitem{cursor:pointer;border:1px solid transparent;border-radius:9px;padding:4px;
+  text-align:center;transition:border-color .12s,background .12s}
+.mpitem:hover{border-color:var(--line2);background:var(--panel2)}
+.mpitem .thumb{width:100%;height:54px;object-fit:cover;border-radius:6px;
+  background:#08090c;display:block;opacity:.85}
+.mpitem:hover .thumb{opacity:1}
+.mpitem b{display:block;font-size:10px;font-weight:450;color:var(--dim);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px}
+.mpitem.sel{border-color:var(--acc);background:var(--acc-d2);
+  box-shadow:inset 0 0 0 1px rgba(10,132,255,.45)}
+.mpitem.sel b{color:var(--txt)}
+.mpitem.file{display:flex;align-items:center;gap:8px;text-align:left;padding:7px 9px}
+.mpitem.file .thumb{width:36px;height:36px;flex:0 0 36px;object-fit:cover}
+.mpbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:9px}
+.mpasset{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;
+  color:var(--dim);padding:4px 9px;border:1px solid var(--line2);border-radius:8px;
+  background:var(--panel2)}
+/* 平铺宫格（不分类，沿用 .mpitem 卡片与选中样式） */
+.mpgrid-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(94px,1fr));gap:8px}
+/* 弹窗内分类分组小标题（角色 / 环境 / 道具 / 其他） */
+.mpsec{font-size:11.5px;font-weight:640;color:var(--acc-h);margin:10px 2px 2px}
+.mpsec:first-child{margin-top:2px}
+.mpsec .note{font-weight:450;color:var(--dim)}
+/* 首尾帧合并宫格：卡片左下角角色徽标（首帧 / 尾帧） */
+.fbadge{position:absolute;left:6px;bottom:6px;font-size:9.5px;font-weight:640;
+  color:#fff;background:rgba(10,132,255,.75);border-radius:5px;padding:1px 6px;
+  pointer-events:none;backdrop-filter:blur(4px)}
+.refitem.empty .fbadge{background:rgba(255,255,255,.12);color:var(--dim)}
+.refitem.empty .thumb{opacity:.45}
+
+/* ========== 时间轴（工作台内嵌 / 底部 dock 共用） ========== */
+.tl{position:relative;height:76px;background:rgba(255,255,255,.035);
+  border:1px solid var(--line);border-radius:12px;margin:10px 0 6px;overflow:hidden;
+  user-select:none}
+.tl .ruler{position:absolute;left:0;right:0;top:0;height:16px;
+  border-bottom:1px solid var(--line)}
+.tl .ruler span{position:absolute;top:0;font-size:9px;color:var(--dim);padding-left:3px;
+  font-variant-numeric:tabular-nums}
+.seg{position:absolute;top:22px;height:40px;border-radius:9px;
+  background:rgba(10,132,255,.1);border:1px solid rgba(10,132,255,.55);
+  display:flex;align-items:center;cursor:grab;overflow:hidden;
+  transition:box-shadow .15s,filter .15s}
+.seg:hover{filter:brightness(1.25);box-shadow:0 2px 10px rgba(10,132,255,.25)}
+.seg.on{box-shadow:0 0 0 2px var(--acc),0 2px 12px rgba(10,132,255,.4);
+  filter:brightness(1.15)}
+.seg:nth-child(3n){background:rgba(48,209,88,.09);border-color:rgba(48,209,88,.55)}
+.seg:nth-child(3n+1){background:rgba(255,159,10,.08);border-color:rgba(255,159,10,.5)}
+.seg .body{flex:1;text-align:center;font-size:10.5px;line-height:1.35;pointer-events:none;
+  white-space:nowrap;overflow:hidden;padding:0 5px;font-variant-numeric:tabular-nums}
+.seg .grip{width:9px;height:100%;background:rgba(255,255,255,.1);cursor:ew-resize;
+  flex:0 0 9px;transition:background .15s}
+.seg .grip:hover{background:var(--acc)}
+.seg.dragging{cursor:ew-resize;filter:brightness(1.35)}
+.tlinfo{font-size:11px;color:var(--dim);font-variant-numeric:tabular-nums}
+
+/* ========== 成片预览：时间轴上方的悬浮播放器 ========== */
+#tlPlayer{position:fixed;left:50%;transform:translateX(-50%);bottom:150px;
+  z-index:40;width:min(720px,92vw);padding:10px;background:var(--glass);
+  -webkit-backdrop-filter:blur(22px) saturate(180%);
+  backdrop-filter:blur(22px) saturate(180%);
+  border:1px solid var(--line2);border-radius:14px;box-shadow:var(--shadow-2)}
+#tlPlayer .tlp-hd{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+#tlPlayer .tlp-hd b{font-size:12.5px;font-weight:640}
+#tlPlayer video{display:block;width:100%;max-height:300px;background:#000;
+  border-radius:10px}
+#tlPlayer .tlp-segs{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.tlp-seg{padding:3px 11px;font-size:11px;border-radius:8px;cursor:pointer;
+  border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--dim)}
+.tlp-seg:hover{color:var(--txt);border-color:var(--line2)}
+.tlp-seg.on{background:var(--acc);border-color:var(--acc);color:#fff;
+  font-weight:600}
+/* 成片模式分镜块：绿色系，区分默认帧布局 */
+.seg.media{background:rgba(48,209,88,.12);
+  border-color:rgba(48,209,88,.6);cursor:pointer}
+.seg.media:hover{filter:brightness(1.2)}
+.seg.media .body{pointer-events:none}
+
+/* ========== 底部悬浮时间轴（毛玻璃） ========== */
+#tlDock{position:fixed;left:0;right:0;bottom:0;z-index:25;
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(22px) saturate(180%);
+  backdrop-filter:blur(22px) saturate(180%);
+  border-top:1px solid var(--line2);padding:9px 20px 11px;
+  box-shadow:0 -10px 34px rgba(0,0,0,.45)}
+#tlDock .dockhd{display:flex;align-items:center;gap:9px;margin-bottom:5px}
+#tlDock .dockhd b{font-size:12px;font-weight:640;display:flex;align-items:center;gap:6px}
+#tlDock .dockhd .ic{color:var(--acc-h)}
+#tlDock .tl{margin:0;background:rgba(255,255,255,.04)}
+body{padding-bottom:138px}

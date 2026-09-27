@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XQWUI 漫剧工作台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234cc9f0' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 9.5h17v7.6a2.9 2.9 0 0 1-2.9 2.9H6.4a2.9 2.9 0 0 1-2.9-2.9V9.5z'/%3E%3Cpath d='m3.8 9.4 1.5-4.3a2 2 0 0 1 2.4-1.3l10.9 2a2 2 0 0 1 1.6 2.3l-.5 1.5'/%3E%3Cpath d='m8.7 4.9-1 4.4M13.9 5.9l-1 4.4'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/workbench.css">
+<link rel="stylesheet" href="/css/tasks.css">
+<link rel="stylesheet" href="/css/results.css">
+</head>
+<body>
+
+<header>
+  <div class="h-group">
+    <h1><span class="brand-ic" data-icon="clapper" data-size="16"></span>XQWUI 漫剧工作台</h1>
+  </div>
+  <div class="h-group">
+    <span class="badge" id="stEngine">引擎检测中…</span>
+    <span class="badge gpu" id="stGpu">GPU –</span>
+    <span class="badge" id="stVram">显存 –</span>
+  </div>
+  <div class="h-sep"></div>
+  <nav class="nav">
+    <button class="on" data-v="home" onclick="UI.nav('home',this)">项目</button>
+    <button data-v="work" onclick="UI.nav('work',this)">工作台</button>
+    <button data-v="lib" onclick="UI.nav('lib',this)">成品库</button>
+    <button data-v="json" onclick="UI.nav('json',this)">JSON</button>
+    <button onclick="Settings.open()" title="存储 / 队列 / 日志 / 配置历史 / 引擎"><i data-icon="gear"></i>系统设置</button>
+  </nav>
+  <div class="h-group">
+    <span class="note" id="autoSaveHint" style="font-size:11px;white-space:nowrap"></span>
+  </div>
+</header>
+
+<main id="main">
+  <!-- ============ 视图：项目首页 ============ -->
+  <div id="vHome">
+    <div class="panel">
+      <h2><i data-icon="stack"></i>项目</h2>
+      <div class="note" style="margin-bottom:10px">每个项目拥有独立的分镜工作台数据；进入项目后在右上角可随时切换其他项目。</div>
+      <div class="projgrid" id="projList"></div>
+    </div>
+  </div>
+
+  <!-- ============ 视图：工作台 ============ -->
+  <div id="vWork" class="hide">
+    <div class="panel">
+      <h2><i data-icon="frames"></i>分镜工作台<span class="note" id="projName"></span><span class="spacer"></span>
+        <button onclick="Segments.add()"><i data-icon="plus"></i>加分镜</button>
+        <button onclick="Segments.loadDemo()" title="填入示例分镜"><i data-icon="text"></i>示例</button>
+        <button class="danger" onclick="Segments.clearAll()"><i data-icon="trash"></i>清空</button></h2>
+      <label>全局提示词（自动合并到每个分镜提示词开头，每个分镜生成都生效）
+        <button class="mini" style="margin-left:8px" title="在光标处插入媒体引用"
+          onclick="Media.pickRef(t => Media.insertPromptToken('gprompt', t))">
+          <i data-icon="photo" data-size="12"></i>插入媒体引用</button></label>
+      <textarea id="gprompt" placeholder="留空则使用各分镜提示词"></textarea>
+      <div class="refzone" id="globalRefs"></div>
+      <div class="tabs" id="segTabs"></div>
+      <div class="segpane" id="segPane"></div>
+      <div style="margin-top:14px;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+        <button class="primary" onclick="Workbench.submit()" style="padding:8px 22px"
+          title="只为当前激活的这一个分镜提交视频任务">
+          <i data-icon="bolt"></i>单个生成</button>
+        <button onclick="Workbench.openBatch()" title="按分镜顺序为所有分镜分别提交视频任务">
+          <i data-icon="stack"></i>批量生成</button>
+        <button id="stopBtn" class="danger hide" onclick="Workbench.stopTasks()"
+          title="停止排队 / 生成中的任务（已完成的分镜产物保留，可在任务中心重试续跑）">
+          <i data-icon="stop"></i>停止任务</button>
+        <button onclick="Workbench.preview()">预览工作流</button>
+        <span class="note" id="subHint"></span>
+      </div>
+      <div class="bar hide" id="subBar"><i></i></div>
+    </div>
+  </div>
+
+  <!-- ============ 视图：任务中心 ============ -->
+  <div id="vTasks" class="hide">
+    <div class="panel">
+      <h2><i data-icon="chart"></i>任务中心<span class="spacer"></span>
+        <button onclick="Tasks.openBatches()" title="批量生成的聚合报告"><i data-icon="stack"></i>批次</button>
+        <button onclick="Tasks.showArchived(false)" title="显示全部任务">全部</button>
+        <button onclick="Tasks.showArchived(true)" title="只看已归档任务">已归档</button>
+        <button onclick="Tasks.reload()"><i data-icon="bolt"></i>刷新</button></h2>
+      <div id="taskList"></div>
+    </div>
+  </div>
+
+  <!-- ============ 视图：成品库 ============ -->
+  <div id="vLib" class="hide">
+    <div class="panel">
+      <h2><i data-icon="stack"></i>成品库<span class="spacer"></span>
+        <button onclick="Results.load('videos')"><i data-icon="film"></i>视频</button>
+        <button onclick="Results.load('images')"><i data-icon="photo"></i>图片</button>
+        <span class="note" id="libCount"></span></h2>
+      <div class="row" style="align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+        <button onclick="Results.selectAll(true)"><i data-icon="check"></i>全选</button>
+        <button onclick="Results.selectAll(false)"><i data-icon="square"></i>清空选择</button>
+        <button onclick="Results.deleteSelected()" class="danger"><i data-icon="trash"></i>删除选中<span id="libSelN"></span></button>
+        <span class="note" style="margin-left:auto">勾选卡片左上角复选框可多选</span>
+      </div>
+      <div class="grid" id="lib"></div>
+      <div class="player" id="player"></div>
+    </div>
+  </div>
+
+  <!-- ============ 视图：JSON ============ -->
+  <div id="vJson" class="hide">
+    <div class="panel">
+      <h2><i data-icon="code"></i>配置与工作流预览</h2>
+      <div class="note">提交给引擎的完整数据结构（timeline_data 由服务端代码动态生成）</div>
+      <div style="margin:10px 0"><button onclick="Workbench.preview(true)">刷新预览</button></div>
+      <pre class="out" id="jsonOut">点击「刷新预览」生成</pre>
+    </div>
+  </div>
+</main>
+
+<!-- ============ 右下角悬浮：任务球（填充=进度，悬停向左展开运行任务） ============ -->
+<div id="taskDock">
+  <div class="td-panel" id="tdPanel"></div>
+  <button id="tdBtn" onclick="Tasks.open()" title="任务中心">
+    <i class="td-fill" id="tdFill"></i>
+    <i data-icon="chart" data-size="17" class="td-ic"></i>
+    <span class="td-pct" id="tdPct"></span>
+  </button>
+</div>
+
+<!-- ============ 右侧悬浮：生成模式切换（本地 / 云端） ============ -->
+<div id="modeDock">
+  <button id="modeLocal" class="mode-btn on" onclick="GenMode.select('local')"
+    title="本地生成 —— 点击切换模式并配置参数">
+    <i data-icon="bolt" data-size="16"></i>
+    <span class="lbl-f">本地生成</span><span class="lbl-s">本地</span>
+  </button>
+  <button id="modeCloud" class="mode-btn" onclick="GenMode.select('cloud')"
+    title="云端生成 —— 点击切换模式并配置参数">
+    <i data-icon="cloud" data-size="16"></i>
+    <span class="lbl-f">云端生成</span><span class="lbl-s">云端</span>
+  </button>
+</div>
+
+<!-- ============ 底部悬浮时间轴 ============ -->
+<div id="tlDock">
+  <div class="dockhd"><b><i data-icon="frames" data-size="13"></i>时间轴</b>
+    <span class="tlinfo" id="tlInfo"></span>
+    <span class="spacer"></span>
+    <button class="mini hide" id="tlPlayAll" title="按时间轴顺序依次播放全部分镜视频"
+      onclick="Timeline.playFrom(0)"><i data-icon="play" data-size="12"></i>连播成片</button>
+    <label class="ck" style="margin:0" title="多个分镜时默认开启：①分镜间预留引导帧；②上一分镜跑完自动抽取末帧与末尾音频，作为下一分镜的参考素材（画面与声音承接）；③成片合并时对接缝音频做淡入淡出，消除爆音。可随时手动关闭，关闭后各分镜完全独立生成">
+      <input type="checkbox" id="contSw" onchange="Segments.setCont(this.checked)">自动首尾帧续写</label>
+    <span class="note">点击分镜选中，拖动边缘调整起止帧</span>
+  </div>
+  <div class="tl" id="tl"><div class="ruler" id="tlRuler"></div></div>
+</div>
+
+<!-- ============ 成片预览播放器（时间轴上方悬浮） ============ -->
+<div id="tlPlayer" class="hide">
+  <div class="tlp-hd"><b id="tlpTitle">成片预览</b><span class="spacer"></span>
+    <button class="mini" onclick="Timeline.closePlayer()">
+      <i data-icon="x" data-size="12"></i>关闭</button></div>
+  <video id="tlpVideo" controls playsinline preload="metadata"></video>
+  <div class="tlp-segs" id="tlpSegs"></div>
+</div>
+
+<!-- ============ 弹窗层 ============ -->
+<div class="modal" id="modalCfg"></div>
+<div class="modal" id="modalPick"></div>
+<div class="modal" id="modalPresets"></div>
+<div class="modal" id="modalStat"></div>
+<div class="modal" id="modalBatch"></div>
+<div class="modal" id="modalProj"></div>
+
+<script>
+// 全局命名空间（经典脚本内联：模块通过 window 暴露）
+window.XQ = { state: {}, config: null };
+</script>
+<script type="module" src="/js/init.js"></script>
+</body>
+</html>

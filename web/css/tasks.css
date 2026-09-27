@@ -1,0 +1,208 @@
+/* tasks.css —— 任务中心：任务卡片 / 状态徽标 / 段进度 / 操作区 */
+
+.tcard{background:var(--panel2);border:1px solid var(--line);border-radius:12px;
+  padding:13px 15px;margin-bottom:11px;transition:border-color .15s,box-shadow .15s}
+.tcard:hover{border-color:var(--line2);box-shadow:var(--shadow-1)}
+.tcard.err{border-color:rgba(255,69,58,.32)}
+.tcard.done{border-color:rgba(48,209,88,.26)}
+
+.tcard .hd{display:flex;align-items:flex-start;gap:9px;flex-wrap:wrap}
+/* 头部信息：固定字段顺序 + 竖线分隔，宽度不足时整字段换行，完整显示不截断 */
+.tcard .hd .hline{flex:1;min-width:0;display:flex;align-items:center;gap:6px;
+  flex-wrap:wrap;row-gap:3px;font-size:12px;font-weight:560;cursor:default}
+.tcard .hd .hline .tstate{flex-shrink:0}
+.tcard .hd .hbar{color:var(--line2);font-weight:400;flex-shrink:0}
+.tcard .hd .meta{font-size:10.5px;color:var(--dim);font-variant-numeric:tabular-nums;
+  flex-shrink:0}
+.tcard .hd .hline > :first-child{margin-right:2px}
+.tcard .hd .spacer{flex:1}
+/* 保存的文件名称：蓝色高亮可点击，过长省略 + 悬停看全名 */
+.tcard .hd .flink{color:var(--acc-h);font-weight:620;cursor:pointer;
+  text-decoration:none;max-width:240px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
+.tcard .hd .flink:hover{text-decoration:underline}
+
+/* 任务状态徽标 */
+.tstate{padding:2.5px 10px;border-radius:20px;font-size:10.5px;font-weight:620;
+  border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--dim);
+  line-height:1.5;white-space:nowrap}
+.tstate.queued{background:var(--acc-d2);color:var(--acc-h);
+  border-color:rgba(10,132,255,.3)}
+.tstate.running{background:var(--acc-d);color:var(--acc-h);
+  border-color:rgba(10,132,255,.4)}
+.tstate.running::before{content:'';display:inline-block;width:6px;height:6px;
+  border-radius:50%;background:var(--acc);margin-right:5px;vertical-align:1px;
+  animation:pulse 1.1s ease-in-out infinite}
+.tstate.pausing,.tstate.canceling{background:var(--warn-d);color:var(--warn);
+  border-color:rgba(255,159,10,.3)}
+.tstate.paused{background:var(--warn-d);color:var(--warn);
+  border-color:rgba(255,159,10,.3)}
+.tstate.canceled{background:rgba(255,255,255,.06);color:var(--dim)}
+.tstate.done{background:var(--ok-d);color:var(--ok);border-color:rgba(48,209,88,.3)}
+.tstate.error{background:var(--err-d);color:var(--err);border-color:rgba(255,69,58,.3)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+.tcard .bar{margin:10px 0 8px}
+.tcard .progline{display:flex;align-items:center;gap:9px}
+.tcard .prognote{font-size:10.5px;color:var(--dim);font-variant-numeric:tabular-nums;
+  white-space:nowrap}
+
+/* 段进度点阵 */
+.tsegs{display:flex;gap:5px;flex-wrap:wrap;margin:2px 0 4px}
+.tseg{display:flex;align-items:center;gap:4px;padding:2.5px 8px;border-radius:8px;
+  font-size:10.5px;border:1px solid var(--line);background:rgba(255,255,255,.035);
+  color:var(--dim);font-variant-numeric:tabular-nums}
+.tseg.done{color:var(--ok);border-color:rgba(48,209,88,.3);background:var(--ok-d)}
+.tseg.running{color:var(--acc-h);border-color:rgba(10,132,255,.4);background:var(--acc-d)}
+.tseg.error{color:var(--err);border-color:rgba(255,69,58,.35);background:var(--err-d)}
+
+.tcard .errmsg{font-size:11.5px;color:var(--err);background:var(--err-d);
+  border:1px solid rgba(255,69,58,.25);border-radius:9px;padding:7px 11px;
+  margin-top:8px;word-break:break-all}
+
+/* 错误类别徽标（error_kind） */
+.kbadge{display:inline-block;padding:1.5px 8px;border-radius:20px;
+  font-size:10px;font-weight:600;background:var(--warn-d);color:var(--warn);
+  border:1px solid rgba(255,159,10,.3);margin-right:6px;vertical-align:1px;
+  cursor:help}
+
+/* 批处理报告行（批次列表 / 明细通用） */
+.brow{display:flex;gap:10px;align-items:center;padding:9px 4px;
+  border-bottom:1px solid var(--line);font-size:12px;flex-wrap:wrap}
+.brow:last-child{border-bottom:none}
+.brow .bname{font-weight:600;color:var(--txt);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px}
+.brow .meta{font-size:10.5px;color:var(--dim);font-variant-numeric:tabular-nums}
+.brow .bar{height:5px;background:var(--panel2);border-radius:6px;overflow:hidden}
+.brow .bar i{display:block;height:100%;background:var(--ok)}
+
+/* 实时状态行：阶段 · 实时描述 · 预计剩余时间 · 等待/处理提示 */
+.stline{display:flex;gap:9px;align-items:baseline;margin-top:6px;
+  font-size:11px;line-height:1.5;flex-wrap:wrap}
+.stline .stag{color:var(--acc-h);font-weight:600;flex-shrink:0}
+.stline .sdet{color:var(--txt);opacity:.85}
+.stline .seta{color:var(--warn);font-variant-numeric:tabular-nums;
+  flex-shrink:0}
+.stline .shint{color:var(--dim)}
+
+.tcard .acts{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;align-items:center}
+
+/* 任务详情展开区（段产物） */
+.tdetail{margin-top:11px;border-top:1px solid var(--line);padding-top:11px}
+.tdetail .dseg{display:flex;gap:12px;align-items:flex-start;padding:8px 0;
+  border-bottom:1px solid var(--line)}
+.tdetail .dseg:last-child{border-bottom:none}
+.tdetail .dseg video{width:200px;max-height:118px;border-radius:9px;background:#000}
+.tdetail .dseg .di{flex:1;min-width:0;font-size:11px;color:var(--dim);line-height:1.7}
+.tdetail .dseg .di b{color:var(--txt);font-size:11.5px;display:block;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tdetail .dseg .di .st-done{color:var(--ok)}
+.tdetail .dseg .di .st-error{color:var(--err)}
+.tdetail .merged{display:flex;align-items:center;gap:9px;margin-top:9px;
+  padding:9px 12px;border:1px solid rgba(48,209,88,.3);background:var(--ok-d);
+  border-radius:10px;font-size:12px}
+.tempty{padding:26px 0;text-align:center;color:var(--dim);font-size:12.5px}
+
+/* 项目首页：宫格布局（4/3/2/1 列响应式） */
+.projgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:16px}
+@media (min-width:1400px){.projgrid{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:640px){.projgrid{gap:12px}}
+
+/* 宫格首格：新建项目入口（虚线框，与其余宫格同尺寸体系） */
+.pcard.pnew{border-style:dashed;border-color:var(--line2);
+  background:rgba(255,255,255,.02);display:flex;flex-direction:column}
+.pcard.pnew .pcover{background:none;border-bottom:none}
+.pcard.pnew .pplus{width:48px;height:48px;border-radius:12px;
+  border:1px dashed var(--line2);color:var(--dim);display:flex;
+  align-items:center;justify-content:center;transition:color .15s,
+  border-color .15s}
+.pcard.pnew .pname{color:var(--dim);font-weight:560}
+.pcard.pnew:hover .pplus{color:var(--acc-h);border-color:var(--acc)}
+.pcard.pnew:hover .pname{color:var(--txt)}
+
+/* 卡片描述行 */
+.pcard .pdesc{font-size:11px;color:var(--dim);margin-bottom:3px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* 项目卡片：封面徽标 / 标题 / 描述 / 操作 四层结构 */
+.pcard{background:var(--panel2);border:1px solid var(--line);border-radius:12px;
+  overflow:hidden;cursor:pointer;transition:border-color .15s,transform .15s,
+  box-shadow .15s}
+.pcard:hover{border-color:rgba(10,132,255,.55);transform:translateY(-2px);
+  box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.pcard:hover .mini.primary{box-shadow:0 0 0 3px rgba(10,132,255,.25)}
+.pcard:active{transform:translateY(0) scale(.99)}
+.pcard:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(10,132,255,.35)}
+.pcard.cur{border-color:rgba(10,132,255,.55);background:var(--acc-d)}
+
+/* ① 封面区：项目首字徽标 + 当前标记 */
+.pcard .pcover{height:88px;background:rgba(255,255,255,.035);
+  display:flex;align-items:center;justify-content:center;position:relative;
+  border-bottom:1px solid var(--line)}
+.pcard .plogo{width:48px;height:48px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(10,132,255,.85),rgba(94,92,230,.85));
+  color:#fff;font-size:20px;font-weight:700;display:flex;
+  align-items:center;justify-content:center;user-select:none}
+.pcard .pcur{position:absolute;top:10px;right:10px;font-size:10px;
+  font-weight:620;color:var(--acc-h);border:1px solid rgba(10,132,255,.4);
+  background:var(--acc-d);border-radius:20px;padding:2px 9px}
+
+/* ② 标题 ③ 描述 ④ 操作 */
+.pcard .pbody{padding:12px 14px 14px}
+.pcard .pname{font-size:14px;font-weight:640;color:var(--txt);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px}
+.pcard .pcmeta{font-size:10.5px;color:var(--dim);margin-bottom:12px}
+.pcard .pcacts{display:flex;gap:8px;justify-content:flex-end}
+.pcard .pcacts .mini.danger:hover{color:var(--err);
+  border-color:rgba(255,69,58,.45);background:rgba(255,69,58,.08)}
+
+/* 移动端：收紧行距 / 加大触控目标 */
+@media (max-width:640px){
+  .pcard .pcover{height:72px}
+  .pcard .pbody{padding:10px 12px 12px}
+  .pcard .pcacts .mini{padding:7px 14px}
+}
+
+/* ========== 右下角任务悬浮球：填充=进度，悬停向左展开运行任务 ========== */
+#taskDock{position:fixed;right:16px;bottom:16px;z-index:27}
+body.in-work #taskDock{bottom:152px}     /* 工作台视图避让底部时间轴 */
+#tdBtn{position:relative;width:52px;height:52px;border-radius:50%;
+  overflow:hidden;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:1px;padding:0;cursor:pointer;
+  background:var(--glass);border:1px solid var(--line2);color:var(--dim);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  box-shadow:var(--shadow-2);transition:border-color .15s,color .15s}
+#tdBtn:hover{color:var(--txt);border-color:rgba(10,132,255,.55)}
+#tdBtn .td-fill{position:absolute;inset:0;pointer-events:none;
+  background:conic-gradient(rgba(10,132,255,.5) calc(var(--p,0)*1%),transparent 0);
+  transition:background .35s}
+#tdBtn .td-ic{position:relative}
+#tdBtn .td-pct{position:relative;font-size:9px;font-weight:660;line-height:1;
+  color:var(--acc-h);font-variant-numeric:tabular-nums}
+#tdBtn .td-pct:empty{display:none}
+/* 悬停向左展开：进行中任务简约信息 */
+#tdPanel{position:absolute;right:60px;bottom:0;min-width:300px;max-width:380px;
+  max-height:260px;overflow:auto;background:var(--glass);
+  border:1px solid var(--line2);border-radius:12px;padding:9px 12px;
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  box-shadow:var(--shadow-2);opacity:0;transform:translateX(8px);
+  pointer-events:none;transition:opacity .18s,transform .18s}
+#taskDock:hover #tdPanel{opacity:1;transform:none;pointer-events:auto}
+#tdPanel .tdp-hd{font-size:11px;font-weight:640;color:var(--dim);margin-bottom:5px}
+#tdPanel .tdp-row{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer}
+#tdPanel .tdp-row+.tdp-row{border-top:1px solid var(--line)}
+#tdPanel .tdp-nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;font-size:12px;color:var(--txt)}
+#tdPanel .tdp-meta{font-size:10.5px;color:var(--dim);white-space:nowrap;
+  font-variant-numeric:tabular-nums}
+#tdPanel .tdp-pct{font-size:10.5px;font-weight:640;color:var(--acc-h);
+  min-width:34px;text-align:right;font-variant-numeric:tabular-nums}
+#tdPanel .tdp-empty{font-size:11px;color:var(--dim);padding:2px 0}
+/* 窄屏：悬浮球收小，面板贴边 */
+@media (max-width:640px){
+  #taskDock{right:10px;bottom:10px}
+  body.in-work #taskDock{bottom:140px}
+  #tdBtn{width:44px;height:44px}
+  #tdPanel{min-width:240px;max-width:calc(100vw - 70px)}
+}

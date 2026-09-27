@@ -1,0 +1,12 @@
+# XQWUI 漫剧工作台 —— Python 依赖清单
+#
+# 运行环境：Python >= 3.10（代码使用 X | Y 类型联合语法）
+# 应用后端（xqwui/ shared/）基于标准库实现（http.server / threading /
+# json / urllib / 纯文件存储），无强制第三方依赖。
+#
+# 安装：pip install -r requirements.txt
+
+Pillow>=10.0.0
+#  用途：上传参考图的 norm 预处理（xqwui/storage/router.py preprocess_material，
+#  长边对齐等比缩放，LANCZOS）；engine/nodes/media_lib.py 媒体节点图像处理。
+#  缺失影响：norm 副本生成自动跳过（功能降级不报错），引擎图像类节点不可用。

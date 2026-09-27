@@ -7,6 +7,23 @@
 
 ---
 
+## 产品简介
+
+![分镜工作台主界面](docs/screenshots/workbench.png)
+
+**分镜工作台**：顶部实时显示引擎连接状态与 GPU 显存，左侧分镜编辑区支持逐段配置
+画面提示词与素材参考，底部时间轴直观展示各段的帧区间与合法重叠。
+
+- **分镜编辑**：段级起止帧（如 0-124帧 / 5秒）、全片段提示词与段内提示词联动，
+  支持 `@素材:文件名` 媒体引用，提交时自动解析归并为参考素材
+- **素材参考**：首帧/尾帧、人物（角色/服装/表情/动作）、道具、场景/光线等
+  分类标签，逐类添加参考图片/视频/音频
+- **时间轴**：总帧数与段间引导一目了然，起止帧可拖拽、自动吸附 `5+17n` 帧网格
+- **一键操作**：「提交生成任务」「预览工作流」直达推理链路；
+  「本地生成 / 云端生成」双模式切换，参数独立记忆
+
+---
+
 ## 系统构成
 
 ```
@@ -46,6 +63,53 @@ python3 -m xqwui.main
 | `ENGINE_DATA` | `data/engine` | 引擎运行时目录（input/output/temp/历史） |
 | `ENGINE_BACKEND` | `auto` | 计算后端选择；`auto` 取第一个可用后端，否则精确匹配 `engine/compute/backends/` 下的后端名 |
 | `XQWUI_HOST` / `XQWUI_PORT` | `0.0.0.0` / `8900` | 应用后端监听地址与端口 |
+| `XQWUI_CONFIG_FILE` | `data/config.json` | 应用后端配置文件路径（CLI `--config` 经此生效） |
+| `XQWUI_LOG_LEVEL` | `INFO` | 应用后端日志级别（CLI `--log-level` 经此生效） |
+
+---
+
+## 命令行管理（应用后端）
+
+应用后端提供完整的服务生命周期管理命令，幂等可重复执行：
+
+```bash
+python -m xqwui.cli <command> [options]
+```
+
+| 命令 | 功能 |
+|---|---|
+| `start` | 启动服务。默认前台运行（`Ctrl+C` 优雅退出）；`-d` 后台守护运行（日志重定向到 `data/logs/cli-daemon.log`，pid + 健康探针双确认就绪）。已在运行时仅提示并成功退出 |
+| `stop` | 优雅停止：先停 HTTP 接收，再释放调度器线程与引擎连接，最后清理 pid 记录（`data/xqwui.pid`）。POSIX 发 `SIGTERM`；Windows 等待宽限期后强制结束（任务状态已落盘）。未运行时仅清理残留记录并成功退出 |
+| `restart` | 先 `stop` 再 `start`（沿用 start 参数） |
+| `status` | 查询运行状态：pid 存活 + HTTP 健康探针双重确认，输出 pid / 地址 / 运行时长 / 引擎在线状态 |
+
+**参数列表**
+
+| 参数 | 适用命令 | 说明 |
+|---|---|---|
+| `-H, --host` | start / restart | 监听地址（默认取配置） |
+| `-p, --port` | start / restart | 监听端口（默认取配置） |
+| `-c, --config` | start / restart | 配置文件路径（默认 `data/config.json`） |
+| `-l, --log-level` | start / restart | 日志级别：`DEBUG / INFO / WARNING / ERROR` |
+| `-d, --daemon` | start / restart | 后台守护运行 |
+| `--wait 秒` | start / restart | 后台模式等待就绪超时（默认 20） |
+| `--timeout 秒` | stop / restart | 优雅退出宽限期（默认 10，超时强制） |
+
+**使用示例**
+
+```bash
+python -m xqwui.cli start                      # 前台启动
+python -m xqwui.cli start -d                   # 后台守护启动
+python -m xqwui.cli start -d -p 9000 -l DEBUG  # 指定端口与日志级别
+python -m xqwui.cli status                     # 查询状态
+python -m xqwui.cli stop                       # 停止服务
+python -m xqwui.cli restart -d -p 9000         # 重启为后台模式
+```
+
+**退出码**：`0` 成功；`1` 操作失败；`2` 参数错误；`3` status 时服务未运行（便于脚本判断）。
+
+> 推理引擎（`engine/`）仍用 `python3 -m engine.main` 前台启动；
+> `python3 -m xqwui.main` 前台启动方式继续可用，与 CLI 等价。
 
 ---
 
@@ -89,7 +153,7 @@ Comfy-XQWUI/
 ├── shared/                  # 公共基座（httpd 路由、RFC6455 WebSocket、工具）
 ├── data/                    # 运行时数据（tasks / storage / engine / presets）
 ├── models/                  # 模型库（默认扫描目录之一）
-└── docs/技术架构.md       # 架构、接口清单、数据流转
+└── docs/                      技术架构.md（架构/接口/数据流转）+ screenshots/（界面截图）
 ```
 
 ---
